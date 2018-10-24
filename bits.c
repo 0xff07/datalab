@@ -137,7 +137,11 @@ int addOK(int x, int y)
  */
 int allEvenBits(int x)
 {
-    return 42;
+    x &= x >> 16;
+    x &= x >> 8;
+    x &= x >> 4;
+    x &= x >> 2;
+    return 1 & x;
 }
 
 /*
@@ -150,7 +154,11 @@ int allEvenBits(int x)
  */
 int allOddBits(int x)
 {
-    return 42;
+    x &= x >> 16;
+    x &= x >> 8;
+    x &= x >> 4;
+    x &= x >> 2;
+    return (2 & x) >> 1;
 }
 
 /*
@@ -163,7 +171,11 @@ int allOddBits(int x)
  */
 int anyEvenBit(int x)
 {
-    return 42;
+    x |= x >> 16;
+    x |= x >> 8;
+    x |= x >> 4;
+    x |= x >> 2;
+    return x & 1;
 }
 
 /*
@@ -176,7 +188,11 @@ int anyEvenBit(int x)
  */
 int anyOddBit(int x)
 {
-    return 42;
+    x |= x >> 16;
+    x |= x >> 8;
+    x |= x >> 4;
+    x |= x >> 2;
+    return (x & 2) >> 1;
 }
 
 /*
@@ -188,7 +204,12 @@ int anyOddBit(int x)
  */
 int bang(int x)
 {
-    return 42;
+    x |= x >> 16;
+    x |= x >> 8;
+    x |= x >> 4;
+    x |= x >> 2;
+    x |= x >> 1;
+    return (x & 1) ^ 1;
 }
 
 /*
@@ -200,7 +221,8 @@ int bang(int x)
  */
 int bitAnd(int x, int y)
 {
-    return 42;
+    /* De Morgan's Law */
+    return ~(~x | ~y);
 }
 
 /*
@@ -212,7 +234,30 @@ int bitAnd(int x, int y)
  */
 int bitCount(int x)
 {
-    return 42;
+    /*mask1 = 0x55555555 */;
+    int mask1 = 0x55 | (0x55 << 8);
+    mask1 = mask1 | (mask1 << 16);
+
+    /* mask2 = 0x33333333 */;
+    int mask2 = 0x33 | (0x33 << 8);
+    mask2 = mask2 | (mask2 << 16);
+
+    /* mask4 = 0x0F0F0F0F; */
+    int mask4 = 0x0F | (0x0F << 8);
+    mask4 = mask4 | (mask4 << 16);
+
+    /* mask8 = 0x00FF00FF; */
+    int mask8 = 0xFF | (0xFF << 16);
+
+    /* mask16 = 0x0000FFFF; */
+    int mask16 = 0xFF | (0xFF << 8);
+
+    x = ((x >> 1) & mask1) + (x & mask1);
+    x = ((x >> 2) & mask2) + (x & mask2);
+    x = ((x >> 4) & mask4) + (x & mask4);
+    x = ((x >> 8) & mask8) + (x & mask8);
+    x = ((x >> 16) & mask16) + (x & mask16);
+    return x;
 }
 
 /*
@@ -240,7 +285,7 @@ int bitMask(int highbit, int lowbit)
  */
 int bitMatch(int x, int y)
 {
-    return 42;
+    return ~(~(x & y) & ~(~x & ~y));
 }
 
 /*
@@ -252,7 +297,8 @@ int bitMatch(int x, int y)
  */
 int bitNor(int x, int y)
 {
-    return 42;
+    /* De Morgan's Law */
+    return (~x & ~y);
 }
 
 /*
@@ -264,7 +310,8 @@ int bitNor(int x, int y)
  */
 int bitOr(int x, int y)
 {
-    return 42;
+    /* De Mogan's Law */
+    return ~((~x) & (~y));
 }
 
 /*
@@ -276,7 +323,12 @@ int bitOr(int x, int y)
  */
 int bitParity(int x)
 {
-    return 42;
+    x ^= x >> 16;
+    x ^= x >> 8;
+    x ^= x >> 4;
+    x ^= x >> 2;
+    x ^= x >> 1;
+    return x & 1;
 }
 
 /*
@@ -289,7 +341,32 @@ int bitParity(int x)
  */
 int bitReverse(int x)
 {
-    return 42;
+    /* mask1 = 0x55555555 */
+    int mask1 = 0x55 | (0x55 << 8);
+    mask1 = mask1 | (mask1 << 16);
+
+    /* mask2 = 0x33333333; */
+    int mask2 = 0x33 | (0x33 << 8);
+    mask2 = mask2 | (mask2 << 16);
+
+    /* mask4 = 0x0f0f0f0f; */
+    int mask4 = 0x0f | (0x0f << 8);
+    mask4 = mask4 | (mask4 << 16);
+
+    /* mask8 = 0x00ff00ff;*/
+    int mask8 = 0xff;
+    mask8 = mask8 | (mask8 << 16);
+
+    /* mask16 = 0x0000ffff; */
+    int mask16 = 0xff | (0xff << 8);
+
+    /* Divide and conquer */
+    x = ((x & mask1) << 1) | ((x >> 1) & mask1);
+    x = ((x & mask2) << 2) | ((x >> 2) & mask2);
+    x = ((x & mask4) << 4) | ((x >> 4) & mask4);
+    x = ((x & mask8) << 8) | ((x >> 8) & mask8);
+    x = ((x & mask16) << 16) | ((x >> 16) & mask16);
+    return x;
 }
 
 /*
@@ -301,7 +378,7 @@ int bitReverse(int x)
  */
 int bitXor(int x, int y)
 {
-    return 42;
+    return ~(x & y) & ~(~x & ~y);
 }
 
 /*
@@ -315,7 +392,13 @@ int bitXor(int x, int y)
  */
 int byteSwap(int x, int n, int m)
 {
-    return 42;
+    int offsetn = n << 3;
+    int offsetm = m << 3;
+    int byten = ((x >> offsetn) & 0xff);
+    int bytem = ((x >> offsetm) & 0xff);
+    int mask1 = (byten << offsetm) | (bytem << offsetn);
+    int mask2 = (bytem << offsetm) | (byten << offsetn);
+    return (x ^ mask1) ^ mask2;
 }
 
 /*
@@ -327,7 +410,9 @@ int byteSwap(int x, int n, int m)
  */
 int conditional(int x, int y, int z)
 {
-    return 42;
+    int maskF = ((!x) << 31) >> 31;
+    int maskT = ((!!x) << 31) >> 31;
+    return (z & maskF) + (y & maskT);
 }
 
 /*
@@ -341,7 +426,47 @@ int conditional(int x, int y, int z)
  */
 int countLeadingZero(int x)
 {
-    return 42;
+    /* mask1 = 0x80000000 */
+    int mask1 = 1U << 31;
+
+    /* mask2 = 0xC0000000 */
+    int mask2 = 0x3 << 30;
+
+    /* mask4 = 0xF0000000 */
+    int mask4 = 0xf << 28;
+
+    /* mask8 = 0xFF000000 */
+    int mask8 = 0xff << 24;
+
+    /* mask16 = 0xFFFF0000 */
+    int mask16 = (0xff | (0xff << 8)) << 16;
+
+    /* binary search no. of leading zeroes */
+    int d = 0;
+    int shmnt = 0;
+
+    shmnt = (!(mask16 & x)) << 4;
+    x = x << shmnt;
+    d = d + shmnt;
+
+    shmnt = (!(mask8 & x)) << 3;
+    x = x << shmnt;
+    d = d + shmnt;
+
+    shmnt = (!(mask4 & x)) << 2;
+    x = x << shmnt;
+    d = d + shmnt;
+
+    shmnt = (!(mask2 & x)) << 1;
+    x = x << shmnt;
+    d = d + shmnt;
+
+    shmnt = (!(mask1 & x));
+    x = x << shmnt;
+    d = d + shmnt;
+
+    d += !(x);
+    return d;
 }
 
 /*
@@ -353,7 +478,7 @@ int countLeadingZero(int x)
  */
 int copyLSB(int x)
 {
-    return 42;
+    return ((((x & 1) << 30) << 1) >> 30) >> 1;
 }
 
 /*
@@ -365,7 +490,7 @@ int copyLSB(int x)
  */
 int distinctNegation(int x)
 {
-    return 42;
+    return !!(x ^ (~x + 1));
 }
 
 /*
@@ -389,7 +514,11 @@ int dividePower2(int x, int n)
  */
 int evenBits(void)
 {
-    return 42;
+    int x = 5;
+    x |= x << 4;
+    x |= x << 8;
+    x |= x << 16;
+    return x;
 }
 
 /*
@@ -621,7 +750,7 @@ unsigned floatUnsigned2Float(unsigned u)
  */
 int getByte(int x, int n)
 {
-    return 42;
+    return (x >> (n << 3)) & 0xff;
 }
 
 /*
@@ -651,7 +780,7 @@ int greatestBitPos(int x)
  */
 int howManyBits(int x)
 {
-    return 0;
+    return 42;
 }
 
 /*
@@ -665,7 +794,7 @@ int howManyBits(int x)
  */
 int implication(int x, int y)
 {
-    return 42;
+    return (!x) | y;
 }
 
 /*
@@ -677,7 +806,49 @@ int implication(int x, int y)
  */
 int intLog2(int x)
 {
-    return 42;
+    /* not yet done */
+    /* mask1 = 0x80000000 */
+    int mask1 = (0x1 << 30) << 1;
+
+    /* mask2 = 0xC0000000 */
+    int mask2 = 0x3 << 30;
+
+    /* mask4 = 0xF0000000 */
+    int mask4 = 0xf << 28;
+
+    /* mask8 = 0xFF000000 */
+    int mask8 = 0xff << 24;
+
+    /* mask16 = 0xFFFF0000 */
+    int mask16 = (0xff | (0xff << 8)) << 16;
+
+    /* binary search no. of leading zeroes */
+    int d = 0;
+    int shmnt = 0;
+
+    shmnt = (!(mask16 & x)) << 4;
+    x = x << shmnt;
+    d = d + shmnt;
+
+    shmnt = (!(mask8 & x)) << 3;
+    x = x << shmnt;
+    d = d + shmnt;
+
+    shmnt = (!(mask4 & x)) << 2;
+    x = x << shmnt;
+    d = d + shmnt;
+
+    shmnt = (!(mask2 & x)) << 1;
+    x = x << shmnt;
+    d = d + shmnt;
+
+    shmnt = (!(mask1 & x));
+    x = x << shmnt;
+    d = d + shmnt;
+
+    d += !(x);
+    d = d + 1;
+    return 32 + (~d + 1);
 }
 
 /*
@@ -704,7 +875,7 @@ int isAsciiDigit(int x)
  */
 int isEqual(int x, int y)
 {
-    return 42;
+    return !(x ^ y);
 }
 
 /*
@@ -752,7 +923,7 @@ int isLessOrEqual(int x, int y)
  */
 int isNegative(int x)
 {
-    return 42;
+    return ((x >> 30) >> 1) & 1;
 }
 
 /*
@@ -764,7 +935,7 @@ int isNegative(int x)
  */
 int isNonNegative(int x)
 {
-    return 42;
+    return !(((x >> 30) >> 1) & 1);
 }
 
 /*
@@ -777,7 +948,12 @@ int isNonNegative(int x)
  */
 int isNonZero(int x)
 {
-    return 42;
+    x |= x >> 16;
+    x |= x >> 8;
+    x |= x >> 4;
+    x |= x >> 2;
+    x |= x >> 1;
+    return x & 1;
 }
 
 /*
@@ -789,7 +965,7 @@ int isNonZero(int x)
  */
 int isNotEqual(int x, int y)
 {
-    return 42;
+    return !!(x ^ y);
 }
 
 /*
@@ -813,7 +989,7 @@ int isPallindrome(int x)
  */
 int isPositive(int x)
 {
-    return 42;
+    return !(((x >> 30) >> 1) & 1) & (!!x);
 }
 
 /*
@@ -838,7 +1014,7 @@ int isPower2(int x)
  */
 int isTmax(int x)
 {
-    return 42;
+    return !(x ^ ((~0) ^ (1U << 31)));
 }
 
 /*
@@ -850,7 +1026,7 @@ int isTmax(int x)
  */
 int isTmin(int x)
 {
-    return 42;
+    return !(x ^ (1U << 31));
 }
 
 /*
@@ -862,7 +1038,7 @@ int isTmin(int x)
  */
 int isZero(int x)
 {
-    return 42;
+    return !x;
 }
 
 /*
@@ -901,7 +1077,12 @@ int leftBitCount(int x)
  */
 int logicalNeg(int x)
 {
-    return 42;
+    x |= x >> 16;
+    x |= x >> 8;
+    x |= x >> 4;
+    x |= x >> 2;
+    x |= x >> 1;
+    return (x & 1) ^ 1;
 }
 
 /*
@@ -914,7 +1095,8 @@ int logicalNeg(int x)
  */
 int logicalShift(int x, int n)
 {
-    return 42;
+    int mask = ~((1U << 31) >> n);
+    return (x >> n) & mask;
 }
 
 /*
@@ -947,7 +1129,7 @@ int minimumOfTwo(int x, int y)
  */
 int minusOne(void)
 {
-    return 42;
+    return ~0;
 }
 
 /*
@@ -975,7 +1157,7 @@ int multFiveEighths(int x)
  */
 int negate(int x)
 {
-    return 42;
+    return ~x + 1;
 }
 
 /*
@@ -986,7 +1168,10 @@ int negate(int x)
  */
 int oddBits(void)
 {
-    return 42;
+    int x = 0xaa;
+    x = x | (x << 8);
+    x = x | (x << 16);
+    return x;
 }
 
 /*
@@ -1013,7 +1198,9 @@ int remainderPower2(int x, int n)
  */
 int replaceByte(int x, int n, int c)
 {
-    return 42;
+    int byte = c << (n << 3);
+    int mask = ~(0xff << (n << 3));
+    return (x & mask) | byte;
 }
 
 /*
@@ -1026,7 +1213,10 @@ int replaceByte(int x, int n, int c)
  */
 int rotateLeft(int x, int n)
 {
-    return 42;
+    int r = 32 + (~n) + 1;
+    int lmask = ~((~0) << r);
+    int rmask = ~((~0) << n);
+    return ((x & lmask) << n) | ((x >> r) & rmask);
 }
 
 /*
@@ -1225,5 +1415,5 @@ int twosComp2SignMag(int x)
  */
 int upperBits(int n)
 {
-    return 42;
+    return ((~0) << (32 + ~n + 1));
 }
