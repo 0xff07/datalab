@@ -1015,7 +1015,8 @@ int isPositive(int x)
  */
 int isPower2(int x)
 {
-    return 42;
+    int sign = ((x >> 30) >> 1) & 1;
+    return !((!x) | (sign) | ((x & (x + ~0))));
 }
 
 /*
