@@ -977,7 +977,20 @@ int isNotEqual(int x, int y)
  */
 int isPallindrome(int x)
 {
-    return 42;
+    int mask16 = 0xFF | (0xFF << 8); /* 0x0000FFFF */
+    int mask8 = 0xFF;                /* 0x000000FF */
+    int mask4 = 0x0F | (0x0F << 8);  /* 0x00000F0F */
+    int mask2 = 0x33 | (0x33 << 8);  /* 0x00003333 */
+    int mask1 = 0x55 | (0x55 << 8);  /* 0x00005555 */
+
+    int l = x & (mask16 << 16);
+    int r = x & (mask16);
+    r = ((r & mask1) << 1) | ((r >> 1) & mask1);
+    r = ((r & mask2) << 2) | ((r >> 2) & mask2);
+    r = ((r & mask4) << 4) | ((r >> 4) & mask4);
+    r = ((r & mask8) << 8) | ((r >> 8) & mask8);
+
+    return !((r << 16) ^ l);
 }
 
 /*
@@ -1287,7 +1300,8 @@ int satMul3(int x)
  */
 int sign(int x)
 {
-    return 42;
+    int mask = (x >> 30) >> 1;
+    return mask | ((!mask) & (!!x));
 }
 
 /*
@@ -1311,7 +1325,7 @@ int signMag2TwosComp(int x)
  */
 int specialBits(void)
 {
-    return 42;
+    return ~((0xFF << 14) | (0x3 << 20));
 }
 
 /*
@@ -1415,5 +1429,6 @@ int twosComp2SignMag(int x)
  */
 int upperBits(int n)
 {
-    return ((~0) << (32 + ~n + 1));
+    int isNonZero = !!n;
+    return (((isNonZero) << 30) << 1) >> (n + (~isNonZero + 1));
 }
