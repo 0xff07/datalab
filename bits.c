@@ -252,7 +252,8 @@ int bitCount(int x)
     /* mask16 = 0x0000FFFF; */
     int mask16 = 0xFF | (0xFF << 8);
 
-    x = ((x >> 1) & mask1) + (x & mask1);
+    x = (((x >> 1) & mask1) ^ (x & mask1)) |
+        ((((x >> 1) & mask1) & (x & mask1)) << 1);
     x = ((x >> 2) & mask2) + (x & mask2);
     x = ((x >> 4) & mask4) + (x & mask4);
     x = ((x >> 8) & mask8) + (x & mask8);
@@ -924,7 +925,7 @@ int isLessOrEqual(int x, int y)
  */
 int isNegative(int x)
 {
-    return ((x >> 30) >> 1) & 1;
+    return !!((1U << 31) & x);
 }
 
 /*
@@ -936,7 +937,7 @@ int isNegative(int x)
  */
 int isNonNegative(int x)
 {
-    return !(((x >> 30) >> 1) & 1);
+    return !((1U << 31) & x);
 }
 
 /*
@@ -1016,7 +1017,7 @@ int isPositive(int x)
  */
 int isPower2(int x)
 {
-    int sign = ((x >> 30) >> 1) & 1;
+    int sign = !!((1U << 31) & x);
     return !((!x) | (sign) | ((x & (x + ~0))));
 }
 
@@ -1079,7 +1080,31 @@ int leastBitPos(int x)
  */
 int leftBitCount(int x)
 {
-    return 42;
+    int mask16 = 0x0000FFFF;
+    int mask8 = 0x00FFFFFF;
+    int mask4 = 0x0FFFFFFF;
+    int mask2 = 0x3FFFFFFF;
+    int mask1 = 0x7FFFFFFF;
+
+    int count = 0;
+    int shmnt = 0;
+    shmnt = !(~(mask16 | x)) << 4;
+    count += shmnt;
+    x = x << shmnt;
+    shmnt = (!(~(mask8 | x))) << 3;
+    count += shmnt;
+    x = x << shmnt;
+    shmnt = (!(~(mask4 | x))) << 2;
+    count += shmnt;
+    x = x << shmnt;
+    shmnt = (!(~(mask2 | x))) << 1;
+    count += shmnt;
+    x = x << shmnt;
+    shmnt = (!(~(mask1 | x)));
+    count += shmnt;
+    x = x << shmnt;
+    count += !!((1U << 31) & x);
+    return count;
 }
 
 /*
@@ -1228,10 +1253,7 @@ int replaceByte(int x, int n, int c)
  */
 int rotateLeft(int x, int n)
 {
-    int r = 32 + (~n) + 1;
-    int lmask = ~((~0) << r);
-    int rmask = ~((~0) << n);
-    return ((x & lmask) << n) | ((x >> r) & rmask);
+    return 42;
 }
 
 /*
