@@ -1350,7 +1350,10 @@ int subtractionOK(int x, int y)
  */
 int thirdBits(void)
 {
-    return 42;
+    int pattern = 0x49 | (0x2 << 8);
+    pattern = pattern | (pattern << 12);
+    pattern = pattern | ((pattern & 0xFF) << 24);
+    return pattern;
 }
 
 /*
@@ -1361,7 +1364,7 @@ int thirdBits(void)
  */
 int tmax(void)
 {
-    return 42;
+    return ~(1U << 31);
 }
 
 /*
@@ -1372,7 +1375,7 @@ int tmax(void)
  */
 int tmin(void)
 {
-    return 42;
+    return 1U << 31;
 }
 
 /*
