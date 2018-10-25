@@ -410,8 +410,10 @@ int byteSwap(int x, int n, int m)
  */
 int conditional(int x, int y, int z)
 {
-    int maskF = ((!x) << 31) >> 31;
-    int maskT = ((!!x) << 31) >> 31;
+    int maskF = (!x);
+    maskF = ~maskF + 1;
+    int maskT = (!!x);
+    maskT = ~maskT + 1;
     return (z & maskF) + (y & maskT);
 }
 
@@ -478,7 +480,7 @@ int countLeadingZero(int x)
  */
 int copyLSB(int x)
 {
-    return ((((x & 1) << 30) << 1) >> 30) >> 1;
+    return ~(x & 1) + 1;
 }
 
 /*
@@ -806,9 +808,8 @@ int implication(int x, int y)
  */
 int intLog2(int x)
 {
-    /* not yet done */
     /* mask1 = 0x80000000 */
-    int mask1 = (0x1 << 30) << 1;
+    int mask1 = 1U << 31;
 
     /* mask2 = 0xC0000000 */
     int mask2 = 0x3 << 30;
@@ -1301,7 +1302,8 @@ int satMul3(int x)
  */
 int sign(int x)
 {
-    int mask = (x >> 30) >> 1;
+    int mask = (1U << 31) & x;
+    mask = (mask >> 30) | (!!mask);
     return mask | ((!mask) & (!!x));
 }
 
@@ -1435,5 +1437,6 @@ int twosComp2SignMag(int x)
 int upperBits(int n)
 {
     int isNonZero = !!n;
-    return (((isNonZero) << 30) << 1) >> (n + (~isNonZero + 1));
+    // return (((isNonZero) << 30) << 1) >> (n + (~isNonZero + 1));
+    return ((~isNonZero + 1) << (32 + ~n + isNonZero)) << !isNonZero;
 }
