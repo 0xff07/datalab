@@ -111,7 +111,9 @@ NOTES:
  */
 int absVal(int x)
 {
-    return 42;
+    unsigned int mask = !!((1U << 31) & x);
+    mask = ~mask + 1;
+    return (mask ^ x) + !!mask;
 }
 
 /*
