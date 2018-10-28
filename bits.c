@@ -126,7 +126,7 @@ int absVal(int x)
  */
 int addOK(int x, int y)
 {
-    return 42;
+   return 42;
 }
 
 /*
@@ -582,7 +582,13 @@ int fitsShort(int x)
  */
 unsigned floatAbsVal(unsigned uf)
 {
-    return 42;
+    unsigned int maskE = 0x7F800000;
+    unsigned int maskM = 0x007FFFFF;
+    int isNaN = (!((maskE & uf) ^ maskE)) && (uf & maskM);
+    if (isNaN)
+        return uf;
+    else
+        return uf & (~(0x80000000));
 }
 
 /*
@@ -613,6 +619,7 @@ int floatFloat2Int(unsigned uf)
  */
 unsigned floatInt2Float(int x)
 {
+    
     return 42;
 }
 
@@ -629,7 +636,7 @@ unsigned floatInt2Float(int x)
  */
 int floatIsEqual(unsigned uf, unsigned ug)
 {
-    return 42;
+   return 42;
 }
 
 /*
@@ -645,7 +652,18 @@ int floatIsEqual(unsigned uf, unsigned ug)
  */
 int floatIsLess(unsigned uf, unsigned ug)
 {
-    return 42;
+    unsigned int mask = ~(1U << 31);
+    unsigned int sgnf = (~mask) & uf;
+    unsigned int sgng = (~mask) & ug;
+    unsigned int sgnLess = sgnf > sgng;
+    uf = uf & mask;
+    ug = ug & mask;
+    unsigned int isNaN = (uf > 0x7F800000) || (ug > 0x7F800000);
+    if (sgnLess)
+        return 1;
+    if (isNaN)
+        return 0;
+    return sgnf < sgng;
 }
 
 /*
@@ -661,7 +679,10 @@ int floatIsLess(unsigned uf, unsigned ug)
  */
 unsigned floatNegate(unsigned uf)
 {
-    return 42;
+    int maskD = ~(1U << 31);
+    if ((uf & maskD) > 0x7F800000)
+        return uf;
+    return (1U << 31) ^ uf;
 }
 
 /*
@@ -1461,6 +1482,5 @@ int twosComp2SignMag(int x)
 int upperBits(int n)
 {
     int isNonZero = !!n;
-    // return (((isNonZero) << 30) << 1) >> (n + (~isNonZero + 1));
     return ((~isNonZero + 1) << (32 + ~n + isNonZero)) << !isNonZero;
 }
