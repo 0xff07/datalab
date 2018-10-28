@@ -88,9 +88,8 @@ int test_bitCount(int x)
 {
     int result = 0;
     int i;
-    for (i = 0; i < 31; i++)
-        result += (x >> i) & 0x1;
-    result += ((x >> 30) >> 1) & 0x1;
+    for (i = 0; i < 32; i++)
+        result += ((unsigned) x >> i) & 0x1;
     return result;
 }
 
@@ -107,14 +106,11 @@ int test_bitMatch(int x, int y)
 {
     int i;
     int result = 0;
-    for (i = 0; i < 31; i++) {
-        int mask = 1 << i;
+    for (i = 0; i < 32; i++) {
+        int mask = 1u << i;
         int bit = (x & mask) == (y & mask);
-        result |= bit << i;
+        result |= (unsigned) bit << i;
     }
-    int mask = (1 << 30) << 1;
-    int bit = (x & mask) == (y & mask);
-    result |= (bit << 30) << 1;
     return result;
 }
 
@@ -132,10 +128,8 @@ int test_bitParity(int x)
 {
     int result = 0;
     int i;
-    for (i = 0; i < 31; i++) {
-        result ^= (x >> i) & 0x1;
-    }
-    result ^= ((x >> 30) >> 1) & 0x1;
+    for (i = 0; i < 32; i++)
+        result ^= ((unsigned) x >> i) & 0x1;
     return result;
 }
 
@@ -143,14 +137,11 @@ int test_bitReverse(int x)
 {
     int result = 0;
     int i;
-    for (i = 0; i < 31; i++) {
-        int bit = (x >> i) & 0x1;
+    for (i = 0; i < 32; i++) {
+        int bit = ((unsigned) x >> i) & 0x1;
         int pos = 31 - i;
         result |= bit << pos;
     }
-    int bit = ((x >> 30) >> 1) & 0x1;
-    int pos = 31 - 31;
-    result |= bit << pos;
     return result;
 }
 
@@ -413,7 +404,7 @@ int test_getByte(int x, int n)
 
 int test_greatestBitPos(int x)
 {
-    unsigned mask = (1 << 30) << 1;
+    unsigned mask = 1u << 31;
     if (x == 0)
         return 0;
     while (!(mask & x)) {
@@ -442,7 +433,7 @@ int test_intLog2(int x)
     int mask, result;
     /* find the leftmost bit */
     result = 31;
-    mask = 1U << result;
+    mask = 1u << result;
     while (!(x & mask)) {
         result--;
         mask = 1 << result;
@@ -557,7 +548,7 @@ int test_leftBitCount(int x)
     int result = 0;
     int i;
     for (i = 31; i >= 0; i--) {
-        int bit = (i == 31) ? (((x >> 30) >> 1) & 0x1) : (x >> i) & 0x1;
+        int bit = ((unsigned) x >> i) & 0x1;
         if (!bit)
             break;
         result++;
@@ -743,7 +734,7 @@ int test_twosComp2SignMag(int x)
 {
     int sign = x < 0;
     int mag = x < 0 ? -x : x;
-    return ((sign << 30) << 1) | mag;
+    return ((unsigned) sign << 31) | mag;
 }
 
 int test_upperBits(int x)
