@@ -636,7 +636,12 @@ unsigned floatInt2Float(int x)
  */
 int floatIsEqual(unsigned uf, unsigned ug)
 {
-   return 42;
+    return uf == ug;
+    int mask = 0x7FFFFFFF;
+    if ((uf & mask) > 0x7F800000 || (ug & mask) > 0x7F800000)
+        return 0;
+    if (!((uf & mask) ||((ug & mask))))
+        return 1;
 }
 
 /*
@@ -652,18 +657,21 @@ int floatIsEqual(unsigned uf, unsigned ug)
  */
 int floatIsLess(unsigned uf, unsigned ug)
 {
-    unsigned int mask = ~(1U << 31);
-    unsigned int sgnf = (~mask) & uf;
-    unsigned int sgng = (~mask) & ug;
-    unsigned int sgnLess = sgnf > sgng;
-    uf = uf & mask;
-    ug = ug & mask;
-    unsigned int isNaN = (uf > 0x7F800000) || (ug > 0x7F800000);
-    if (sgnLess)
-        return 1;
-    if (isNaN)
-        return 0;
-    return sgnf < sgng;
+    int maskD = 0x7FFFFFFFu;
+    int maskNaN = 0x7F800000u;
+    unsigned int isNaN = ((maskD & uf) > maskNaN) || ((maskD & ug) > maskNaN);
+    unsigned int areZero = !(maskD & uf) && !(maskD & ug);
+    unsigned int sgnf = (uf >> 31) & 1U;
+    unsigned int sgng = (ug >> 31) & 1U;
+    unsigned int ret = 42;
+    if (areZero || isNaN) {
+        ret = 0;
+    } else if (sgng != sgnf) {
+        ret = sgng < sgnf;
+    } else {
+        ret = (sgnf == 1)? uf > ug : uf < ug;
+    }
+    return ret;
 }
 
 /*

@@ -21,6 +21,12 @@ ishow: ishow.c
 check: btest
 	./btest
 
+longtime: btest.c bits.c decl.c tests.c btest.h bits.h
+	$(CC) $(CFLAGS) -DLONGCHECK $(LIBS) -o btest bits.c btest.c decl.c tests.c \
+    
+longcheck: longtime
+	./btest
+
 clean:
 	rm -f *.o btest fshow ishow *~
 
