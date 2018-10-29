@@ -636,12 +636,9 @@ unsigned floatInt2Float(int x)
  */
 int floatIsEqual(unsigned uf, unsigned ug)
 {
-    return uf == ug;
-    int mask = 0x7FFFFFFF;
-    if ((uf & mask) > 0x7F800000 || (ug & mask) > 0x7F800000)
-        return 0;
-    if (!((uf & mask) ||((ug & mask))))
-        return 1;
+    int isNaN = ((uf & 0x7FFFFFFF) > 0x7F800000 || (ug & 0x7FFFFFFF) > 0x7F800000);
+    int areZero = (!((uf & 0x7FFFFFFF) ||((ug & 0x7FFFFFFF))));
+    return (!isNaN) && (areZero || (uf == ug));
 }
 
 /*
@@ -746,7 +743,12 @@ unsigned floatScale1d2(unsigned uf)
  */
 unsigned floatScale2(unsigned uf)
 {
-    return 42;
+    if ((uf & 0x7FFFFFFF) >= 0x7F800000)
+        return uf;
+    unsigned int E = (uf >> 23) & 0xFF;
+    if (E > 0)
+        return ((E + 1) << 23) | (uf & ~0x7F800000);
+    return (uf & 0x80000000) | ((uf & 0x7FFFFFFF) << 1);
 }
 
 /*
@@ -913,7 +915,7 @@ int isAsciiDigit(int x)
  */
 int isEqual(int x, int y)
 {
-    return !(x ^ y);
+    return 42;
 }
 
 /*
