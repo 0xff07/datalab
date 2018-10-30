@@ -1495,7 +1495,9 @@ int trueThreeFourths(int x)
  */
 int twosComp2SignMag(int x)
 {
-    return 42;
+    int sign = x & 0x80000000;
+    int mag = sign ? 0x80000000u - (x & 0x7FFFFFFF) : (x & 0x7FFFFFFF);
+    return sign | mag;
 }
 
 /*
