@@ -126,7 +126,10 @@ int absVal(int x)
  */
 int addOK(int x, int y)
 {
-   return 42;
+    unsigned x_ = x | 0u;
+    unsigned y_ = y | 0u;
+    int sign = ((x_ + y_) >> 31) & 1;
+    return (((x_ >> 31) & 1) ^ sign) & (((y_ >> 31 & 1) & 1) ^ sign);
 }
 
 /*
@@ -566,7 +569,9 @@ int fitsBits(int x, int n)
  */
 int fitsShort(int x)
 {
-    return 42;
+    return (1U << 31) >> 31;
+    unsigned int x_ = x | 0u;
+    return (((x_ & 0xFFFFu) << 16) >> 16) == x_;
 }
 
 /*
@@ -619,7 +624,6 @@ int floatFloat2Int(unsigned uf)
  */
 unsigned floatInt2Float(int x)
 {
-    
     return 42;
 }
 
@@ -636,8 +640,9 @@ unsigned floatInt2Float(int x)
  */
 int floatIsEqual(unsigned uf, unsigned ug)
 {
-    int isNaN = ((uf & 0x7FFFFFFF) > 0x7F800000 || (ug & 0x7FFFFFFF) > 0x7F800000);
-    int areZero = (!((uf & 0x7FFFFFFF) ||((ug & 0x7FFFFFFF))));
+    int isNaN =
+        ((uf & 0x7FFFFFFF) > 0x7F800000 || (ug & 0x7FFFFFFF) > 0x7F800000);
+    int areZero = (!((uf & 0x7FFFFFFF) || ((ug & 0x7FFFFFFF))));
     return (!isNaN) && (areZero || (uf == ug));
 }
 
@@ -666,7 +671,7 @@ int floatIsLess(unsigned uf, unsigned ug)
     } else if (sgng != sgnf) {
         ret = sgng < sgnf;
     } else {
-        ret = (sgnf == 1)? uf > ug : uf < ug;
+        ret = (sgnf == 1) ? uf > ug : uf < ug;
     }
     return ret;
 }
@@ -915,7 +920,7 @@ int isAsciiDigit(int x)
  */
 int isEqual(int x, int y)
 {
-    return 42;
+    return !(x ^ y);
 }
 
 /*
@@ -1105,7 +1110,11 @@ int isZero(int x)
  */
 int leastBitPos(int x)
 {
-    return 42;
+    unsigned int _x = (x | 0u);
+    if (x ^ 0)
+        return 0;
+    _x = (_x ^ (x - 1)) + 1;
+    return _x ? (_x >> 1) : 0x80000000;
 }
 
 /*
