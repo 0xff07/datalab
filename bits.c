@@ -574,9 +574,7 @@ int fitsBits(int x, int n)
  */
 int fitsShort(int x)
 {
-    return (1U << 31) >> 31;
-    unsigned int x_ = x | 0u;
-    return (((x_ & 0xFFFFu) << 16) >> 16) == x_;
+    return !((((x & 0xFFFF) << 16) >> 16) ^ x);
 }
 
 /*
