@@ -544,7 +544,10 @@ int evenBits(void)
  */
 int ezThreeFourths(int x)
 {
-    return 42;
+    x = (x << 1) + x;
+    int sign = !!(x & 0x80000000);
+    sign = ~sign + 1;
+    return (x + (sign & ((1 << 2) - 1))) >> 2;
 }
 
 /*
