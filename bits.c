@@ -511,7 +511,9 @@ int distinctNegation(int x)
  */
 int dividePower2(int x, int n)
 {
-    return 42;
+    int sign = !!(x & 0x80000000);
+    sign = ~sign + 1;
+    return (x + (sign & ((1 << n) - 1))) >> n;
 }
 
 /*
