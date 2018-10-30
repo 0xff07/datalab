@@ -1392,7 +1392,10 @@ int sign(int x)
  */
 int signMag2TwosComp(int x)
 {
-    return 42;
+    int mag = 0x7FFFFFFF & x;
+    int sign = !!(0x80000000 & x);
+    int mask = ~sign + 1;
+    return (mag ^ mask) + sign;
 }
 
 /*
