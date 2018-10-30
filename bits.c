@@ -1235,7 +1235,10 @@ int minusOne(void)
  */
 int multFiveEighths(int x)
 {
-    return 42;
+    x = (x << 2) + x;
+    int sign = !!(x & 0x80000000);
+    sign = ~sign + 1;
+    return (x + (sign & ((1 << 3) - 1))) >> 3;
 }
 
 /*
