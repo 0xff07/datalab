@@ -811,7 +811,48 @@ int getByte(int x, int n)
  */
 int greatestBitPos(int x)
 {
-    return 42;
+    /* mask1 = 0x80000000 */
+    int mask1 = 1U << 31;
+
+    /* mask2 = 0xC0000000 */
+    int mask2 = 0x3 << 30;
+
+    /* mask4 = 0xF0000000 */
+    int mask4 = 0xf << 28;
+
+    /* mask8 = 0xFF000000 */
+    int mask8 = 0xff << 24;
+
+    /* mask16 = 0xFFFF0000 */
+    int mask16 = (0xff | (0xff << 8)) << 16;
+
+    /* binary search no. of leading zeroes */
+    int d = 0;
+    int shmnt = 0;
+
+    shmnt = (!(mask16 & x)) << 4;
+    x = x << shmnt;
+    d = d + shmnt;
+
+    shmnt = (!(mask8 & x)) << 3;
+    x = x << shmnt;
+    d = d + shmnt;
+
+    shmnt = (!(mask4 & x)) << 2;
+    x = x << shmnt;
+    d = d + shmnt;
+
+    shmnt = (!(mask2 & x)) << 1;
+    x = x << shmnt;
+    d = d + shmnt;
+
+    shmnt = (!(mask1 & x));
+    x = x << shmnt;
+    d = d + shmnt;
+
+    d += !(x);
+    int xZero = !!x;
+    return ((1) << (31 - d)) & (~xZero + 1);
 }
 
 /* howManyBits - return the minimum number of bits required to represent x in
