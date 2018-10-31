@@ -1130,11 +1130,8 @@ int isZero(int x)
  */
 int leastBitPos(int x)
 {
-    unsigned int _x = (x | 0u);
-    if (x ^ 0)
-        return 0;
-    _x = (_x ^ (x - 1)) + 1;
-    return _x ? (_x >> 1) : 0x80000000;
+    unsigned int x_ = x;
+    return (x_ & (x_ + ~1 + 1)) ^ x;
 }
 
 /*
