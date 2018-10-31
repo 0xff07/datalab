@@ -279,7 +279,10 @@ int bitCount(int x)
  */
 int bitMask(int highbit, int lowbit)
 {
-    return 42;
+    unsigned int mask = (highbit + ~lowbit + 1);
+    mask = !((mask >> 31) & 1);
+    mask = ~mask + 1;
+    return (mask << (highbit)) ^ (mask << (lowbit));
 }
 
 /*
@@ -1405,7 +1408,21 @@ int rotateRight(int x, int n)
  */
 int satAdd(int x, int y)
 {
-    return 42;
+    unsigned mask = (1U << 31);
+    unsigned x_ = x;
+    unsigned y_ = y;
+    unsigned sum = x_ + y_;
+    unsigned posx = !(mask & x_);
+    unsigned posy = !(mask & y_);
+    unsigned possum = !(mask & sum);
+    unsigned info = (posx << 2) | (posy << 1) | possum;
+    unsigned maskMax = !(info ^ 6);
+    unsigned maskMin = !(info ^ 1);
+    unsigned maskOK = !(maskMin | maskMax);
+    maskMax = ~maskMax + 1;
+    maskMin = ~maskMin + 1;
+    maskOK = ~maskOK + 1;
+    return (maskMax & 0x7FFFFFFF) | (maskMin & (0x80000000)) | (maskOK & sum);
 }
 
 /*
