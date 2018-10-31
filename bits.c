@@ -561,7 +561,9 @@ int ezThreeFourths(int x)
  */
 int fitsBits(int x, int n)
 {
-    return 42;
+    int mask = !!((1U << 31) & x);
+    mask = ~mask + 1;
+    return !((x >> (n - 1)) ^ mask);
 }
 
 /*
@@ -668,15 +670,11 @@ int floatIsLess(unsigned uf, unsigned ug)
     unsigned int areZero = !(maskD & uf) && !(maskD & ug);
     unsigned int sgnf = (uf >> 31) & 1U;
     unsigned int sgng = (ug >> 31) & 1U;
-    unsigned int ret = 42;
-    if (areZero || isNaN) {
-        ret = 0;
-    } else if (sgng != sgnf) {
-        ret = sgng < sgnf;
-    } else {
-        ret = (sgnf == 1) ? uf > ug : uf < ug;
-    }
-    return ret;
+    if (areZero || isNaN)
+        return 0;
+    if (sgng != sgnf)
+        return sgng < sgnf;
+    return (sgnf == 1) ? uf > ug : uf < ug;
 }
 
 /*
@@ -1185,7 +1183,7 @@ int logicalNeg(int x)
  */
 int logicalShift(int x, int n)
 {
-    int mask = ~((1U << 31) >> n);
+    int mask = ~(((!!n) << 31) >> n);
     return (x >> n) & mask;
 }
 
@@ -1501,9 +1499,9 @@ int trueThreeFourths(int x)
  */
 int twosComp2SignMag(int x)
 {
-    int sign = x & 0x80000000;
-    int mag = sign ? 0x80000000u - (x & 0x7FFFFFFF) : (x & 0x7FFFFFFF);
-    return sign | mag;
+    unsigned int mask = !!((1U << 31) & x);
+    mask = ~mask + 1;
+    return ((mask ^ x) + !!mask) | ((1U << 31) & x);
 }
 
 /*
