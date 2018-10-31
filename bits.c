@@ -1211,7 +1211,15 @@ int logicalShift(int x, int n)
  */
 int maximumOfTwo(int x, int y)
 {
-    return 42;
+    unsigned x_ = x;
+    unsigned y_ = y;
+    unsigned res = x_ + ~y_ + 1;
+    unsigned sgnx = (x_ >> 31) & 1;
+    unsigned sgny = (y_ >> 31) & 1;
+    unsigned sgn = (sgnx ^ 1) & (sgny ^ 0);
+    unsigned xgreater = (sgn | ((!(sgnx ^ sgny)) & !(res >> 31))) & !!(x ^ y);
+    unsigned mask = ~xgreater + 1;
+    return (x | ~mask) & (y | (mask));
 }
 
 /*
