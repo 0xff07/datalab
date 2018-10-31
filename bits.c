@@ -126,10 +126,11 @@ int absVal(int x)
  */
 int addOK(int x, int y)
 {
-    unsigned x_ = x | 0u;
-    unsigned y_ = y | 0u;
-    int sign = ((x_ + y_) >> 31) & 1;
-    return (((x_ >> 31) & 1) ^ sign) & (((y_ >> 31 & 1) & 1) ^ sign);
+    unsigned mask = (1U << 31);
+    unsigned x_ = x;
+    unsigned y_ = y;
+    unsigned sum = x_ + y_;
+    return !(((mask & x_) ^ (mask & sum)) & ((mask & y_) ^ (mask & sum)));
 }
 
 /*
