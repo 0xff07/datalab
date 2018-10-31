@@ -952,7 +952,13 @@ int isGreater(int x, int y)
  */
 int isLess(int x, int y)
 {
-    return 42;
+    unsigned x_ = y;
+    unsigned y_ = x;
+    unsigned res = x_ + ~y_ + 1;
+    unsigned sgnx = (x_ >> 31) & 1;
+    unsigned sgny = (y_ >> 31) & 1;
+    unsigned sgn = (sgnx ^ 1) & (sgny ^ 0);
+    return (sgn | ((!(sgnx ^ sgny)) & !(res >> 31))) & !!(x ^ y);
 }
 
 /*
